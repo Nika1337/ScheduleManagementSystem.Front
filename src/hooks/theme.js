@@ -18,6 +18,18 @@ const theme = createTheme({
             primary: "#333333",
             secondary: "#666666",
         },
+        shiftColors: [
+            "#404040", // Dark Gray (Neutral)
+            "#A52A2A", // Brown (Earthy tone, related to primary)
+            "#B22222", // Firebrick (Deep red, complements secondary)
+            "#696969", // Dim Gray (A variation of dark gray)
+            "#DC143C", // Crimson (Bright red, strong contrast)
+            "#8B0000", // Dark Red (Similar to secondary, slightly muted)
+            "#2F4F4F", // Dark Slate Gray (Subtle blue-gray contrast)
+            "#CD5C5C", // Indian Red (Lighter, softer red)
+            "#D2691E", // Chocolate (Warm brown, keeps variety)
+            "#FF6347", // Tomato (Reddish-orange, to add pop)
+        ],
     },
     typography: {
         fontFamily: "Arial, sans-serif",

@@ -9,8 +9,12 @@ const userRole = "admin";
 const Dashboard = () => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [shifts, setShifts] = useState([
-        { id: 1, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Morning" },
-        { id: 2, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-22", partOfDay: "Evening" },
+        { id: 1, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Evening" },
+        { id: 2, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-22", partOfDay: "Afternoon" },
+        { id: 3, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Morning" },
+        { id: 4, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-21", partOfDay: "Evening" },
+        { id: 5, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Afternoon" },
+        { id: 6, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-20", partOfDay: "Evening" },
     ]);
 
     const handleAddShift = (newShift) => {
