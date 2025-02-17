@@ -22,26 +22,27 @@ const Dashboard = () => {
     };
 
     return (
-        <Container
-            disableGutters
-            maxWidth={false}
-            sx={{ position: "relative", paddingBottom: "24px" }}
-        >
+        <Container disableGutters maxWidth="lg" sx={{ paddingBottom: "80px", position: "relative" }}>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
                 <DashboardCalendar shifts={shifts} />
-
-                {userRole === "admin" && (
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 2 }}>
-                        <Fab
-                            color="primary"
-                            aria-label="add"
-                            onClick={() => setModalOpen(true)}
-                        >
-                            <AddIcon />
-                        </Fab>
-                    </Box>
-                )}
             </Box>
+
+            {/* Floating FAB - Fixed Position, Aligns with Container */}
+            {userRole === "admin" && (
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    onClick={() => setModalOpen(true)}
+                    sx={{
+                        position: "fixed",
+                        bottom: 24,
+                        right: { xs: 24, lg: "calc(50% - 600px + 24px)" }, // Keeps it inside the container
+                        zIndex: 1000,
+                    }}
+                >
+                    <AddIcon />
+                </Fab>
+            )}
 
             <AddShiftModal open={isModalOpen} onClose={() => setModalOpen(false)} onSave={handleAddShift} />
         </Container>
