@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Container } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DashboardCalendar from "../components/DashboardCalendar.jsx";
 import AddShiftModal from "../components/AddShiftModal.jsx";
@@ -18,26 +18,29 @@ const Dashboard = () => {
     };
 
     return (
-        <Box sx={{ position: "relative"}}>
-            <DashboardCalendar shifts={shifts} />
+        <Container
+            disableGutters
+            maxWidth={false}
+            sx={{ position: "relative", paddingBottom: "24px" }}
+        >
+            <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
+                <DashboardCalendar shifts={shifts} />
 
-            {userRole === "admin" && (
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    sx={{
-                        position: "fixed",
-                        bottom: 16,
-                        right: 16,
-                    }}
-                    onClick={() => setModalOpen(true)}
-                >
-                    <AddIcon />
-                </Fab>
-            )}
+                {userRole === "admin" && (
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 2 }}>
+                        <Fab
+                            color="primary"
+                            aria-label="add"
+                            onClick={() => setModalOpen(true)}
+                        >
+                            <AddIcon />
+                        </Fab>
+                    </Box>
+                )}
+            </Box>
 
             <AddShiftModal open={isModalOpen} onClose={() => setModalOpen(false)} onSave={handleAddShift} />
-        </Box>
+        </Container>
     );
 };
 
