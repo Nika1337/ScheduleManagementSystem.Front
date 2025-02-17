@@ -14,7 +14,7 @@ import { useTheme, Paper } from "@mui/material";
 
 const pages = [
     { name: "Dashboard", path: "/" },
-    { name: "Schedule Requests", path: "/schedule-requests" },
+    { name: "Schedule Change Requests", path: "/schedule-change-requests" },
     { name: "Jobs", path: "/jobs" },
     { name: "Workers", path: "/workers" },
 ];
