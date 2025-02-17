@@ -1,5 +1,5 @@
-import  { useState } from "react";
-import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -22,9 +22,7 @@ const pages = [
 function NavBar() {
     const theme = useTheme();
     const navigate = useNavigate();
-
     const location = useLocation();
-
     const isProfileActive = location.pathname === "/profile";
     const [anchorElNav, setAnchorElNav] = useState(null);
 
@@ -46,6 +44,7 @@ function NavBar() {
                 <Container maxWidth="xl">
                     <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
                         <Toolbar disableGutters>
+                            {/* Mobile Menu */}
                             <Box sx={{ flexGrow: 1, display: { xs: "flex", sm: "none" } }}>
                                 <IconButton
                                     size="large"
@@ -91,27 +90,46 @@ function NavBar() {
                                 </Menu>
                             </Box>
 
+                            {/* Desktop Menu */}
                             <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" }, justifyContent: "center", gap: 2 }}>
                                 {pages.map(({ name, path }) => (
                                     <NavLink key={name} to={path} style={{ textDecoration: "none" }}>
                                         {({ isActive }) => (
                                             <Button
                                                 sx={{
+                                                    position: "relative",
                                                     borderRadius: "20px",
                                                     backgroundColor: isActive ? theme.palette.primary.main : "white",
                                                     color: isActive ? theme.palette.primary.contrastText : theme.palette.text.primary,
                                                     "&:hover": {
                                                         backgroundColor: isActive ? theme.palette.primary.main : theme.palette.background.default,
                                                     },
+                                                    paddingBottom: "6px",
+                                                    minWidth: "100px",
                                                 }}
                                             >
                                                 {name}
+                                                {isActive && (
+                                                    <Box
+                                                        sx={{
+                                                            position: "absolute",
+                                                            bottom: "4px",
+                                                            left: "50%",
+                                                            transform: "translateX(-50%)",
+                                                            height: "4px",
+                                                            width: "30%",
+                                                            backgroundColor: theme.palette.secondary.main,
+                                                            borderRadius: "2px",
+                                                        }}
+                                                    />
+                                                )}
                                             </Button>
                                         )}
                                     </NavLink>
                                 ))}
                             </Box>
 
+                            {/* Profile Icon */}
                             <Box sx={{ flexGrow: 0 }}>
                                 <IconButton sx={{ p: 0 }} onClick={() => navigate("/profile")}>
                                     <Avatar
