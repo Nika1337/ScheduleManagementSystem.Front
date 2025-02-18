@@ -1,17 +1,18 @@
 import { useState } from "react";
-import {Box, Typography, Paper, Button, Grid, useTheme} from "@mui/material";
+import { Box, Typography, Paper, Button, Grid, useTheme } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import ShiftDetailsModal from "./ShiftDetailsModal";
-
-const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-const partsOfDay = ["Morning", "Afternoon", "Evening"];
+import { useAppContext } from "../context/AppContext";
 
 const getShiftsForSlot = (shifts, date, partOfDay) => {
     return shifts.filter((shift) => shift.date === date && shift.partOfDay === partOfDay);
 };
 
-const DashboardCalendar = ( {shifts}) => {
+const DashboardCalendar = () => {
+    const { shifts, partsOfDay } = useAppContext();
+    const theme = useTheme();
+
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     const [startDate, setStartDate] = useState(() => {
         const today = new Date();
@@ -39,10 +40,9 @@ const DashboardCalendar = ( {shifts}) => {
         setModalOpen(false);
     };
 
-    const theme = useTheme();
     const getShiftColor = (shiftId) => {
         const colors = theme.palette.shiftColors;
-        return colors[shiftId % colors.length]; // Assigns color cyclically
+        return colors[shiftId % colors.length];
     };
 
     return (
