@@ -90,7 +90,6 @@ function NavBar() {
                                 </Menu>
                             </Box>
 
-                            {/* Desktop Menu */}
                             <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" }, justifyContent: "center", gap: 2 }}>
                                 {pages.map(({ name, path }) => (
                                     <NavLink key={name} to={path} style={{ textDecoration: "none" }}>
@@ -129,14 +128,13 @@ function NavBar() {
                                 ))}
                             </Box>
 
-                            {/* Profile Icon */}
                             <Box sx={{ flexGrow: 0 }}>
                                 <IconButton sx={{ p: 0 }} onClick={() => navigate("/profile")}>
                                     <Avatar
                                         alt="User"
                                         src="/static/images/avatar/2.jpg"
                                         sx={{
-                                            border: isProfileActive ? `3px solid ${theme.palette.primary.main}` : "none",
+                                            border: isProfileActive ? `3px solid ${theme.palette.secondary.main}` : "none",
                                             padding: isProfileActive ? "3px" : "0",
                                         }}
                                     />
