@@ -1,42 +1,13 @@
-import { useState } from "react";
-import {
-    Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton
-} from "@mui/material";
-import { CheckCircle, Cancel, Undo } from "@mui/icons-material"; // Added Undo for Withdraw
-
-// Mock Data
-const mockRequests = [
-    {
-        id: "1",
-        workerName: "John Doe",
-        jobType: "Electrician",
-        previousDate: "2025-02-15",
-        previousPartOfDay: "Morning",
-        newDate: "2025-02-16",
-        newPartOfDay: "Evening",
-        requestDate: "2025-02-10",
-    },
-    {
-        id: "2",
-        workerName: "Jane Smith",
-        jobType: "Plumber",
-        previousDate: "2025-02-17",
-        previousPartOfDay: "Afternoon",
-        newDate: "2025-02-18",
-        newPartOfDay: "Morning",
-        requestDate: "2025-02-11",
-    },
-];
-
-// Change role to "admin" or "worker" to test different views
-const userRole = "worker"; // or "worker"
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from "@mui/material";
+import { CheckCircle, Cancel, Undo } from "@mui/icons-material";
+import { useAppContext } from "../context/AppContext"; // Import context
 
 const ScheduleChangeRequests = () => {
-    const [requests, setRequests] = useState(mockRequests);
+    const { scheduleRequests, setScheduleRequests, userRole } = useAppContext(); // Get requests & role from context
 
     const handleUpdate = (id, status) => {
         console.log(`Request ${id} was ${status}`);
-        setRequests((prevRequests) => prevRequests.filter((request) => request.id !== id));
+        setScheduleRequests((prevRequests) => prevRequests.filter((request) => request.id !== id));
     };
 
     return (
@@ -54,8 +25,8 @@ const ScheduleChangeRequests = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {requests.length > 0 ? (
-                            requests.map((request) => (
+                        {scheduleRequests.length > 0 ? (
+                            scheduleRequests.map((request) => (
                                 <TableRow key={request.id}>
                                     <TableCell>{request.workerName}</TableCell>
                                     <TableCell>{request.jobType}</TableCell>
@@ -67,7 +38,7 @@ const ScheduleChangeRequests = () => {
                                     </TableCell>
                                     <TableCell>{request.requestDate}</TableCell>
                                     <TableCell>
-                                        {userRole === "admin" ? (
+                                        {userRole === "Admin" ? (
                                             <>
                                                 <IconButton
                                                     color="success"
@@ -82,9 +53,9 @@ const ScheduleChangeRequests = () => {
                                                     <Cancel />
                                                 </IconButton>
                                             </>
-                                        ) : userRole === "worker" ? (
+                                        ) : userRole === "Worker" ? (
                                             <IconButton
-                                                color="gray"
+                                                color="default"
                                                 onClick={() => handleUpdate(request.id, "withdrawn")}
                                             >
                                                 <Undo />

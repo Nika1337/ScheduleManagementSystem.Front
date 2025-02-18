@@ -2,12 +2,14 @@ import { useState, useRef } from "react";
 import { Container, Box, TextField, Button, Typography, Paper, Avatar } from "@mui/material";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import { useAppContext } from "../context/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-    const { user, setUser } = useAppContext();
+    const { user, setUser, logoutUser } = useAppContext();
     const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
-    const [profileImage, setProfileImage] = useState(user.avatar || null);
+
     const fileInputRef = useRef(null);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
@@ -17,8 +19,7 @@ const Profile = () => {
         const file = e.target.files[0];
         if (file) {
             const imageUrl = URL.createObjectURL(file);
-            setProfileImage(imageUrl);
-            setUser({ ...user, avatar: file });
+            setUser({ ...user, avatar: imageUrl }); // Update global user context
         }
     };
 
@@ -29,6 +30,11 @@ const Profile = () => {
     const handleSaveChanges = () => {
         console.log("Updated User Info:", user);
         console.log("Profile Image File:", user.avatar);
+    };
+
+    const handleLogout = () => {
+        logoutUser();
+        navigate("/login"); // Redirect to login after logout
     };
 
     return (
@@ -42,7 +48,7 @@ const Profile = () => {
                     onChange={handleImageChange}
                 />
                 <Avatar
-                    src={profileImage}
+                    src={user.avatar}
                     alt={`${user.firstName} ${user.surname}`}
                     sx={{ width: 100, height: 100, margin: "0 auto", mb: 2, cursor: "pointer" }}
                     onClick={handleAvatarClick}
@@ -98,6 +104,15 @@ const Profile = () => {
                         onClick={() => setPasswordModalOpen(true)}
                     >
                         Change Password
+                    </Button>
+                    <Button
+                        variant="text"
+                        color="error"
+                        fullWidth
+                        sx={{ marginTop: 2, fontWeight: "bold" }}
+                        onClick={handleLogout}
+                    >
+                        Logout
                     </Button>
                 </Box>
             </Paper>
