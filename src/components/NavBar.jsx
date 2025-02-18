@@ -11,28 +11,31 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme, Paper } from "@mui/material";
-import { useAppContext } from "../context/AppContext"; // Import global state
+import { useAppContext } from "../context/AppContext";
 
-const pages = [
-    { name: "Dashboard", path: "/" },
-    { name: "Schedule Change Requests", path: "/schedule-change-requests" },
-    { name: "Jobs", path: "/jobs" },
-    { name: "Employees", path: "/employees" },
-];
 
 function NavBar() {
+    const { user, userRole } = useAppContext();
     const theme = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
     const isProfileActive = location.pathname === "/profile";
     const [anchorElNav, setAnchorElNav] = useState(null);
 
-    const { user } = useAppContext(); // Get user from context
-    const profileImage =
-        user.avatar instanceof File ? URL.createObjectURL(user.avatar) : user.avatar || "/static/images/default-avatar.png"; // Handle file uploads
 
     const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
     const handleCloseNavMenu = () => setAnchorElNav(null);
+
+
+    const pages = [
+        { name: "Dashboard", path: "/", allowedRoles: ["Admin", "Worker"] },
+        { name: "Schedule Change Requests", path: "/schedule-change-requests", allowedRoles: ["Admin", "Worker"] },
+        { name: "Jobs", path: "/jobs", allowedRoles: ["Admin"] },
+        { name: "Employees", path: "/employees", allowedRoles: ["Admin"] },
+    ];
+
+    const visiblePages = pages.filter(page => page.allowedRoles.includes(userRole));
+
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", padding: "16px" }}>
@@ -68,7 +71,7 @@ function NavBar() {
                                     open={Boolean(anchorElNav)}
                                     onClose={handleCloseNavMenu}
                                 >
-                                    {pages.map(({ name, path }) => (
+                                    {visiblePages.map(({ name, path }) => (
                                         <MenuItem key={name} onClick={handleCloseNavMenu}>
                                             <NavLink to={path} style={{ textDecoration: "none", width: "100%" }}>
                                                 {({ isActive }) => (
@@ -103,7 +106,7 @@ function NavBar() {
                                     overflow: "hidden",
                                 }}
                             >
-                                {pages.map(({ name, path }) => (
+                                {visiblePages.map(({ name, path }) => (
                                     <NavLink key={name} to={path} style={{ textDecoration: "none" }}>
                                         {({ isActive }) => (
                                             <Button
@@ -116,11 +119,11 @@ function NavBar() {
                                                         backgroundColor: isActive ? theme.palette.primary.main : theme.palette.background.default,
                                                     },
                                                     paddingBottom: "6px",
-                                                    minWidth: "120px", // Prevents buttons from shrinking too much
-                                                    maxWidth: "220px", // Prevents buttons from stretching too wide
-                                                    whiteSpace: "nowrap", // Prevents text from wrapping into multiple lines
-                                                    overflow: "hidden", // Prevents text from expanding outside the button
-                                                    textOverflow: "ellipsis", // Adds "..." if text is too long
+                                                    minWidth: "120px",
+                                                    maxWidth: "220px",
+                                                    whiteSpace: "nowrap",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
                                                 }}
                                             >
                                                 {name}
@@ -148,14 +151,14 @@ function NavBar() {
                             <Box sx={{ flexGrow: 0 }}>
                                 <IconButton sx={{ p: 0 }} onClick={() => navigate("/profile")}>
                                     <Avatar
-                                        alt={user.firstName || "User"}
-                                        src={profileImage} // Use dynamic image from context
+                                        alt={user ? `${user.firstName} ${user.surname}` : "User"}
+                                        src={user?.avatar || "/static/images/avatar/default.png"}
                                         sx={{
                                             width: 40, // Keep the same size
                                             height: 40, // Keep the same size
                                             borderRadius: "50%", // Ensure circular shape
                                             boxShadow: isProfileActive
-                                                ? `0px 0px 5px 3px ${theme.palette.secondary.main}` // Border effect outside image
+                                                ? `0px 0px 2px 3px ${theme.palette.secondary.main}`
                                                 : "none",
                                         }}
                                     />
