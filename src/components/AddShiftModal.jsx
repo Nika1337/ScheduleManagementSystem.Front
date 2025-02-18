@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, M
 import { useAppContext } from "../context/AppContext";
 
 const AddShiftModal = ({ open, onClose, onSave }) => {
-    const { employees, roles, partsOfDay } = useAppContext();
+    const { employees, jobs, partsOfDay } = useAppContext(); // Get jobs from context
     const [selectedWorker, setSelectedWorker] = useState("");
     const [selectedJob, setSelectedJob] = useState("");
     const [selectedDate, setSelectedDate] = useState("");
@@ -41,7 +41,7 @@ const AddShiftModal = ({ open, onClose, onSave }) => {
                     onChange={(event, newValue) => setSelectedWorker(newValue)}
                 />
                 <Autocomplete
-                    options={roles} // Get job roles from context
+                    options={jobs.map(job => job.name)} // Get job names from context
                     renderInput={(params) => <TextField {...params} label="Job" fullWidth margin="dense" />}
                     value={selectedJob}
                     onChange={(event, newValue) => setSelectedJob(newValue)}

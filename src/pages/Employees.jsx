@@ -3,22 +3,17 @@ import { Box, Fab, Container } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddEmployeeModal from "../components/AddEmployeeModal";
 import EmployeesList from "../components/EmployeesList";
-
-// Mock roles (these would be fetched from the server)
-const mockRoles = ["Worker", "Manager", "Admin"];
-
-// Mock Employees Data
-const mockEmployees = [
-    { id: 1, name: "John", surname: "Doe", email: "john.doe@example.com", startDate: "2025-02-15", role: "Worker" },
-    { id: 2, name: "Jane", surname: "Smith", email: "jane.smith@example.com", startDate: "2025-02-20", role: "Manager" },
-];
+import { useAppContext } from "../context/AppContext"; // Import context
 
 const Employees = () => {
-    const [employees, setEmployees] = useState(mockEmployees);
+    const { employees, setEmployees, roles } = useAppContext(); // Get employees & roles from context
     const [isModalOpen, setModalOpen] = useState(false);
 
     const handleAddEmployee = (newEmployee) => {
-        setEmployees([...employees, { ...newEmployee, id: employees.length + 1 }]); // Mock ID
+        setEmployees((prevEmployees) => [
+            ...prevEmployees,
+            { ...newEmployee, id: prevEmployees.length + 1, startDate: new Date().toISOString().split("T")[0] }, // Assign mock ID & start date
+        ]);
     };
 
     const handleRoleChange = (id, newRole) => {
@@ -50,7 +45,7 @@ const Employees = () => {
             </Fab>
 
             {/* Add Employee Modal */}
-            <AddEmployeeModal open={isModalOpen} onClose={() => setModalOpen(false)} onSave={handleAddEmployee} roles={mockRoles} />
+            <AddEmployeeModal open={isModalOpen} onClose={() => setModalOpen(false)} onSave={handleAddEmployee} roles={roles} />
         </Container>
     );
 };

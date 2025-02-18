@@ -3,19 +3,17 @@ import { Box, Fab, Container } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import JobsList from "../components/JobsList";
 import AddJobModal from "../components/AddJobModal";
-
+import { useAppContext } from "../context/AppContext"; // Import context
 
 const Jobs = () => {
+    const { jobs, setJobs } = useAppContext(); // Get jobs from context
     const [isModalOpen, setModalOpen] = useState(false);
-    const [jobs, setJobs] = useState([
-        { id: 1, name: "Software Engineer" },
-        { id: 2, name: "Product Manager" },
-        { id: 3, name: "UX Designer" },
-    ]);
 
     const handleAddJob = (name) => {
-        const newJob = { id: jobs.length + 1, name };
-        setJobs([...jobs, newJob]);
+        setJobs((prevJobs) => [
+            ...prevJobs,
+            { id: prevJobs.length + 1, name }, // Assign a unique ID
+        ]);
     };
 
     return (
