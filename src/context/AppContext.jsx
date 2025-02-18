@@ -3,7 +3,7 @@ import { createContext, useState, useContext } from "react";
 // Create Context
 const AppContext = createContext();
 
-// Mock roles (this will be fetched from backend in the future)
+// Mock roles (these will be fetched from backend in the future)
 const mockRoles = ["Worker", "Manager", "Admin"];
 
 // Mock employees
@@ -26,14 +26,18 @@ const mockShifts = [
     { id: 2, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-22", partOfDay: "Afternoon" },
 ];
 
+// Mock parts of the day
+const mockPartsOfDay = ["Morning", "Afternoon", "Evening"];
+
 export const AppProvider = ({ children }) => {
     const [employees, setEmployees] = useState(mockEmployees);
     const [roles] = useState(mockRoles);
     const [user, setUser] = useState(mockUser);
     const [shifts, setShifts] = useState(mockShifts);
+    const [partsOfDay] = useState(mockPartsOfDay); // Store parts of the day
 
     return (
-        <AppContext.Provider value={{ employees, setEmployees, roles, user, setUser, shifts, setShifts }}>
+        <AppContext.Provider value={{ employees, setEmployees, roles, user, setUser, shifts, setShifts, partsOfDay }}>
             {children}
         </AppContext.Provider>
     );

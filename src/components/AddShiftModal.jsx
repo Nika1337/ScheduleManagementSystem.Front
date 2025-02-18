@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, Autocomplete } from "@mui/material";
-
-const workers = ["Adams, Co", "Aguirre, Ha", "Smith, Jo", "Taylor, Li", "Brown, Mi"];
-const jobTypes = ["Barista", "Waiter", "Security", "Chef", "Manager"];
-
-const partsOfDayOptions = ["Morning", "Afternoon", "Evening"];
+import { useAppContext } from "../context/AppContext";
 
 const AddShiftModal = ({ open, onClose, onSave }) => {
+    const { employees, roles, partsOfDay } = useAppContext();
     const [selectedWorker, setSelectedWorker] = useState("");
     const [selectedJob, setSelectedJob] = useState("");
     const [selectedDate, setSelectedDate] = useState("");
@@ -38,13 +35,13 @@ const AddShiftModal = ({ open, onClose, onSave }) => {
             <DialogTitle>Add New Shift</DialogTitle>
             <DialogContent>
                 <Autocomplete
-                    options={workers}
+                    options={employees.map(emp => `${emp.name} ${emp.surname}`)} // Get workers from context
                     renderInput={(params) => <TextField {...params} label="Worker" fullWidth margin="dense" />}
                     value={selectedWorker}
                     onChange={(event, newValue) => setSelectedWorker(newValue)}
                 />
                 <Autocomplete
-                    options={jobTypes}
+                    options={roles} // Get job roles from context
                     renderInput={(params) => <TextField {...params} label="Job" fullWidth margin="dense" />}
                     value={selectedJob}
                     onChange={(event, newValue) => setSelectedJob(newValue)}
@@ -66,7 +63,7 @@ const AddShiftModal = ({ open, onClose, onSave }) => {
                     margin="dense"
                     onChange={(e) => setSelectedPartOfDay(e.target.value)}
                 >
-                    {partsOfDayOptions.map((option) => (
+                    {partsOfDay.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>
