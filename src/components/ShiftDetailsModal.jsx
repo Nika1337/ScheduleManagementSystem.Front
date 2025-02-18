@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem } from "@mui/material";
-
-const partsOfDayOptions = ["Morning", "Afternoon", "Evening"];
+import { useAppContext } from "../context/AppContext";
 
 const ShiftDetailsModal = ({ shift, open, onClose, onSave }) => {
+    const { partsOfDay } = useAppContext();
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedPartOfDay, setSelectedPartOfDay] = useState("");
 
@@ -53,7 +53,7 @@ const ShiftDetailsModal = ({ shift, open, onClose, onSave }) => {
                     margin="dense"
                     onChange={(e) => setSelectedPartOfDay(e.target.value)}
                 >
-                    {partsOfDayOptions.map((option) => (
+                    {partsOfDay.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>

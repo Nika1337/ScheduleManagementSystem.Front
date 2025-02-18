@@ -9,7 +9,7 @@ const getShiftsForSlot = (shifts, date, partOfDay) => {
 };
 
 const DashboardCalendar = () => {
-    const { shifts, partsOfDay } = useAppContext();
+    const { shifts, setShifts, partsOfDay } = useAppContext();
     const theme = useTheme();
 
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -36,10 +36,14 @@ const DashboardCalendar = () => {
         setModalOpen(true);
     };
 
-    const handleSaveShift = () => {
+    const handleSaveShift = (updatedShift) => {
+        setShifts((prevShifts) =>
+            prevShifts.map((shift) =>
+                shift.id === updatedShift.id ? updatedShift : shift
+            )
+        );
         setModalOpen(false);
     };
-
     const getShiftColor = (shiftId) => {
         const colors = theme.palette.shiftColors;
         return colors[shiftId % colors.length];

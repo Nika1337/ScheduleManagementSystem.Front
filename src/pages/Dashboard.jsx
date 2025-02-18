@@ -3,23 +3,19 @@ import { Box, Fab, Container } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DashboardCalendar from "../components/DashboardCalendar.jsx";
 import AddShiftModal from "../components/AddShiftModal.jsx";
-
-const userRole = "admin";
+import { useAppContext } from "../context/AppContext"; // Import context
 
 const Dashboard = () => {
+    const { shifts, setShifts, userRole } = useAppContext(); // Get userRole from context
     const [isModalOpen, setModalOpen] = useState(false);
-    const [shifts, setShifts] = useState([
-        { id: 1, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Evening" },
-        { id: 2, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-22", partOfDay: "Afternoon" },
-        { id: 3, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Morning" },
-        { id: 4, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-21", partOfDay: "Evening" },
-        { id: 5, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Afternoon" },
-        { id: 6, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-20", partOfDay: "Evening" },
-    ]);
 
     const handleAddShift = (newShift) => {
-        setShifts([...shifts, newShift]);
+        setShifts((prevShifts) => [
+            ...prevShifts,
+            { ...newShift, id: prevShifts.length + 1 }
+        ]);
     };
+
 
     return (
         <Container disableGutters maxWidth="lg" sx={{ paddingBottom: "80px", position: "relative" }}>
@@ -28,7 +24,7 @@ const Dashboard = () => {
             </Box>
 
             {/* Floating FAB - Fixed Position, Aligns with Container */}
-            {userRole === "admin" && (
+            {userRole === "Admin" && ( // Now using userRole from context
                 <Fab
                     color="primary"
                     aria-label="add"

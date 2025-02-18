@@ -18,6 +18,7 @@ const mockUser = {
     surname: "Doe",
     email: "john.doe@example.com",
     avatar: "https://i.pravatar.cc/150?img=3", // Placeholder user image
+    role: "Admin", // Added role to mockUser
 };
 
 // Mock shifts
@@ -36,8 +37,11 @@ export const AppProvider = ({ children }) => {
     const [shifts, setShifts] = useState(mockShifts);
     const [partsOfDay] = useState(mockPartsOfDay); // Store parts of the day
 
+    // Derive user role from user object
+    const userRole = user?.role || "Worker"; // Default to "Worker" if undefined
+
     return (
-        <AppContext.Provider value={{ employees, setEmployees, roles, user, setUser, shifts, setShifts, partsOfDay }}>
+        <AppContext.Provider value={{ employees, setEmployees, roles, user, setUser, userRole, shifts, setShifts, partsOfDay }}>
             {children}
         </AppContext.Provider>
     );
