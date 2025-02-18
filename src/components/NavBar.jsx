@@ -16,7 +16,7 @@ const pages = [
     { name: "Dashboard", path: "/" },
     { name: "Schedule Change Requests", path: "/schedule-change-requests" },
     { name: "Jobs", path: "/jobs" },
-    { name: "Workers", path: "/workers" },
+    { name: "Employees", path: "/employees" },
 ];
 
 function NavBar() {

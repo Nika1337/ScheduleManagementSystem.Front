@@ -5,7 +5,7 @@ import theme from "./hooks/theme.js";
 import Dashboard from "./pages/Dashboard.jsx";
 import ScheduleChangeRequests from "./pages/ScheduleChangeRequests.jsx";
 import Jobs from "./pages/Jobs.jsx";
-import Workers from "./pages/Workers.jsx";
+import Employees from "./pages/Employees.jsx";
 
 function App() {
     return (
@@ -21,7 +21,7 @@ function App() {
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/schedule-change-requests" element={<ScheduleChangeRequests />} />
                         <Route path="/jobs" element={<Jobs />} />
-                        <Route path="/workers" element={<Workers />} />
+                        <Route path="/employees" element={<Employees />} />
                     </Routes>
                 </Container>
             </Router>
