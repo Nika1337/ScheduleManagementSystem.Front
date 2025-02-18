@@ -7,25 +7,27 @@ import ScheduleChangeRequests from "./pages/ScheduleChangeRequests.jsx";
 import Jobs from "./pages/Jobs.jsx";
 import Employees from "./pages/Employees.jsx";
 import Profile from "./pages/Profile.jsx";
+import { AppProvider } from "./context/AppContext.jsx";
 
 function App() {
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Router>
-                <NavBar />
-
-                <Container sx={{ textAlign: "center", marginTop: 4 }}>
-                    <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/schedule-change-requests" element={<ScheduleChangeRequests />} />
-                        <Route path="/jobs" element={<Jobs />} />
-                        <Route path="/employees" element={<Employees />} />
-                        <Route path="/profile" element={<Profile />} />
-                    </Routes>
-                </Container>
-            </Router>
-        </ThemeProvider>
+        <AppProvider>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Router>
+                    <NavBar />
+                    <Container sx={{ textAlign: "center", marginTop: 4 }}>
+                        <Routes>
+                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/schedule-change-requests" element={<ScheduleChangeRequests />} />
+                            <Route path="/jobs" element={<Jobs />} />
+                            <Route path="/employees" element={<Employees />} />
+                            <Route path="/profile" element={<Profile />} />
+                        </Routes>
+                    </Container>
+                </Router>
+            </ThemeProvider>
+        </AppProvider>
     );
 }
 
