@@ -11,6 +11,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme, Paper } from "@mui/material";
+import { useAppContext } from "../context/AppContext"; // Import global state
 
 const pages = [
     { name: "Dashboard", path: "/" },
@@ -25,6 +26,10 @@ function NavBar() {
     const location = useLocation();
     const isProfileActive = location.pathname === "/profile";
     const [anchorElNav, setAnchorElNav] = useState(null);
+
+    const { user } = useAppContext(); // Get user from context
+    const profileImage =
+        user.avatar instanceof File ? URL.createObjectURL(user.avatar) : user.avatar || "/static/images/default-avatar.png"; // Handle file uploads
 
     const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
     const handleCloseNavMenu = () => setAnchorElNav(null);
@@ -44,8 +49,8 @@ function NavBar() {
                 <Container maxWidth="xl">
                     <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
                         <Toolbar disableGutters>
-                            {/* Mobile Menu */}
-                            <Box sx={{ flexGrow: 1, display: { xs: "flex", sm: "none" } }}>
+                            {/* Mobile Menu - Collapse Earlier at md (960px) */}
+                            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                                 <IconButton
                                     size="large"
                                     aria-label="menu"
@@ -65,10 +70,7 @@ function NavBar() {
                                 >
                                     {pages.map(({ name, path }) => (
                                         <MenuItem key={name} onClick={handleCloseNavMenu}>
-                                            <NavLink
-                                                to={path}
-                                                style={{ textDecoration: "none", width: "100%" }}
-                                            >
+                                            <NavLink to={path} style={{ textDecoration: "none", width: "100%" }}>
                                                 {({ isActive }) => (
                                                     <Button
                                                         fullWidth
@@ -90,7 +92,17 @@ function NavBar() {
                                 </Menu>
                             </Box>
 
-                            <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" }, justifyContent: "center", gap: 2 }}>
+                            {/* Desktop Menu - Collapse Earlier */}
+                            <Box
+                                sx={{
+                                    flexGrow: 1,
+                                    display: { xs: "none", md: "flex" }, // Collapse at md (960px) instead of sm (600px)
+                                    justifyContent: "center",
+                                    gap: 1,
+                                    flexWrap: "nowrap",
+                                    overflow: "hidden",
+                                }}
+                            >
                                 {pages.map(({ name, path }) => (
                                     <NavLink key={name} to={path} style={{ textDecoration: "none" }}>
                                         {({ isActive }) => (
@@ -104,7 +116,11 @@ function NavBar() {
                                                         backgroundColor: isActive ? theme.palette.primary.main : theme.palette.background.default,
                                                     },
                                                     paddingBottom: "6px",
-                                                    minWidth: "100px",
+                                                    minWidth: "120px", // Prevents buttons from shrinking too much
+                                                    maxWidth: "220px", // Prevents buttons from stretching too wide
+                                                    whiteSpace: "nowrap", // Prevents text from wrapping into multiple lines
+                                                    overflow: "hidden", // Prevents text from expanding outside the button
+                                                    textOverflow: "ellipsis", // Adds "..." if text is too long
                                                 }}
                                             >
                                                 {name}
@@ -128,14 +144,19 @@ function NavBar() {
                                 ))}
                             </Box>
 
+                            {/* Profile Avatar */}
                             <Box sx={{ flexGrow: 0 }}>
                                 <IconButton sx={{ p: 0 }} onClick={() => navigate("/profile")}>
                                     <Avatar
-                                        alt="User"
-                                        src="/static/images/avatar/2.jpg"
+                                        alt={user.firstName || "User"}
+                                        src={profileImage} // Use dynamic image from context
                                         sx={{
-                                            border: isProfileActive ? `3px solid ${theme.palette.secondary.main}` : "none",
-                                            padding: isProfileActive ? "3px" : "0",
+                                            width: 40, // Keep the same size
+                                            height: 40, // Keep the same size
+                                            borderRadius: "50%", // Ensure circular shape
+                                            boxShadow: isProfileActive
+                                                ? `0px 0px 5px 3px ${theme.palette.secondary.main}` // Border effect outside image
+                                                : "none",
                                         }}
                                     />
                                 </IconButton>
