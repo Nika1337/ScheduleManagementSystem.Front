@@ -51,7 +51,7 @@ const DashboardCalendar = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <Box sx={{ padding: 3, backgroundColor: theme.palette.background.default }}>
+            <Box sx={{ padding: 3}}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Typography variant="h5" gutterBottom align="left" color="text.primary">
                         Week of {startDate.toISOString().split("T")[0]}
@@ -83,7 +83,7 @@ const DashboardCalendar = () => {
                     </Box>
                 </Box>
 
-                <Box sx={{ overflowX: "auto", width: "100%" }}>
+                <Box sx={{ overflowX: "auto", width: "100%", backgroundColor: "white", borderRadius: 2 }}>
                     <Grid container sx={{ border: "2px solid #ddd", borderRadius: 2, minWidth: "900px", overflow: "hidden" }}>
                         <Grid container sx={{ backgroundColor: "#eeeeee", fontWeight: "bold", borderBottom: "2px solid #ddd" }}>
                             <Grid item xs={2} sx={{ padding: 1, textAlign: "center", borderRight: "2px solid #ddd" }}>
@@ -102,7 +102,7 @@ const DashboardCalendar = () => {
 
                         {partsOfDay.map((partOfDay) => (
                             <Grid container key={partOfDay} sx={{ borderBottom: "2px solid #ddd" }}>
-                                <Grid item xs={2} sx={{ padding: 1, fontWeight: "bold", textAlign: "center", backgroundColor: "#f9f9f9", borderRight: "2px solid #ddd" }}>
+                                <Grid item xs={2} sx={{ padding: 1, fontWeight: "bold", textAlign: "center", backgroundColor: "#eeeeee", borderRight: "2px solid #ddd" }}>
                                     {partOfDay}
                                 </Grid>
 

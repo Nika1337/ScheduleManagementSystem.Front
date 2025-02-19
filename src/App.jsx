@@ -9,6 +9,7 @@ import Employees from "./pages/Employees.jsx";
 import Profile from "./pages/Profile.jsx";
 import Login from "./pages/Login.jsx";
 import { useAppContext } from "./context/AppContext";
+import './styles/styles.css';
 
 function App() {
     const { user } = useAppContext(); // Get logged-in user
