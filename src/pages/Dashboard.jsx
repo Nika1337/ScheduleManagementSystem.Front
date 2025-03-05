@@ -1,13 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
-import { Box, Fab, Container, CircularProgress, Alert } from "@mui/material";
+import {
+    Box,
+    Fab,
+    Container,
+    CircularProgress,
+    Alert,
+    Snackbar,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import DashboardCalendar from "../components/DashboardCalendar.jsx";
-import AddScheduleModal from "../components/AddScheduleModal.jsx";
-import { changeSchedule, getSchedules } from "../services/schedules";
+import DashboardCalendar from "../components/DashboardCalendar";
+import AddScheduleModal from "../components/AddScheduleModal";
+import { getSchedules } from "../services/schedules";
 import { getUserRole, getToken } from "../hooks/useAuth";
 import { PART_OF_DAY_OPTIONS } from "../constants/partOfDay";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
-// Helper to get Monday for a given date
 const getMondayOfWeek = (date) => {
     const monday = new Date(date);
     monday.setDate(date.getDate() - date.getDay() + 1);
@@ -20,13 +27,17 @@ const Dashboard = () => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
     const userRole = getUserRole();
+
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState("");
 
     const getStartAndEndDate = (mondayDate) => {
         const mondayThisWeek = new Date(mondayDate);
         const mondayNextWeek = new Date(mondayThisWeek);
         mondayNextWeek.setDate(mondayThisWeek.getDate() + 7);
-        const formatDate = (date) => date.toISOString().split("T")[0];
+        const formatDate = (d) => d.toISOString().split("T")[0];
         return {
             startDate: formatDate(mondayThisWeek),
             endDate: formatDate(mondayNextWeek),
@@ -49,13 +60,49 @@ const Dashboard = () => {
         }
     }, [weekStartDate]);
 
-    // Fetch schedules whenever weekStartDate changes.
     useEffect(() => {
         fetchSchedules();
     }, [fetchSchedules]);
 
+    useEffect(() => {
+        if (userRole !== "Worker") {
+            return;
+        }
 
-    // Handler for changing the week; offset is in weeks (e.g., -1 for previous, 1 for next)
+        const token = getToken();
+        const controller = new AbortController();
+
+        fetchEventSource("http://localhost:5090/schedules/change-events", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "text/event-stream"
+            },
+            signal: controller.signal,
+
+            onmessage: async (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    setNotificationMessage(data.message);
+                    setNotificationOpen(true);
+
+                    await fetchSchedules();
+                } catch (parseErr) {
+                    console.error("Failed to parse SSE event data:", parseErr);
+                }
+            },
+
+            onerror(err) {
+                console.error("SSE encountered an error:", err);
+            },
+        });
+
+        return () => {
+            controller.abort();
+        };
+    }, [userRole, fetchSchedules]);
+
     const changeWeek = (offset) => {
         setWeekStartDate((prev) => {
             const newDate = new Date(prev);
@@ -107,6 +154,21 @@ const Dashboard = () => {
                 onClose={() => setModalOpen(false)}
                 onSuccess={fetchSchedules}
             />
+
+            <Snackbar
+                open={notificationOpen}
+                autoHideDuration={6000}
+                onClose={() => setNotificationOpen(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+                <Alert
+                    severity="info"
+                    onClose={() => setNotificationOpen(false)}
+                    sx={{ width: "100%" }}
+                >
+                    {notificationMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 };
