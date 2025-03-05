@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, CircularProgress } from "@mui/material";
 import { PART_OF_DAY_OPTIONS } from "../constants/partOfDay";
-import { changeSchedule } from "../services/schedules"; // ✅ Import update service
+import { changeSchedule } from "../services/schedules";
 import { getToken } from "../hooks/useAuth";
 
 const ScheduleDetailsModal = ({ schedule, open, onClose, onSuccess }) => {
@@ -28,10 +28,10 @@ const ScheduleDetailsModal = ({ schedule, open, onClose, onSuccess }) => {
                 partOfDay: selectedPartOfDay,
             };
 
-            await changeSchedule(schedule.id, updatedSchedule, getToken()); // ✅ API call
+            await changeSchedule(schedule.id, updatedSchedule, getToken());
 
-            if (onSuccess) onSuccess(); // ✅ Call success callback (if provided)
-            onClose(); // ✅ Close modal
+            if (onSuccess) onSuccess();
+            onClose();
         } catch (err) {
             console.error("Failed to update schedule:", err);
             setError("Failed to update schedule. Please try again.");

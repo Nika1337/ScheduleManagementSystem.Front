@@ -3,7 +3,7 @@ import { Container, Box, TextField, Button, Typography, Paper, Avatar, CircularP
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import ChangeEmailModal from "../components/ChangeEmailModal";
 import { getUserRole, getUserEmail, getToken, useAuth } from "../hooks/useAuth";
-import { getProfile, updateProfile } from "../services/profile"; // ✅ Import updateProfile
+import { getProfile, updateProfile } from "../services/profile";
 
 const Profile = () => {
     const { logout } = useAuth();
@@ -41,7 +41,7 @@ const Profile = () => {
 
     const handleSaveChanges = async () => {
         try {
-            await updateProfile({ firstName, lastName }, getToken()); // ✅ Send updated data to backend
+            await updateProfile({ firstName, lastName }, getToken());
         } catch (error) {
             console.error("Failed to update profile:", error);
         }
@@ -77,7 +77,7 @@ const Profile = () => {
                         variant="outlined"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        InputProps={{ readOnly: isAdmin }} // ✅ Editable for non-admins
+                        InputProps={{ readOnly: isAdmin }}
                     />
                     <TextField
                         fullWidth
@@ -87,7 +87,7 @@ const Profile = () => {
                         variant="outlined"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        InputProps={{ readOnly: isAdmin }} // ✅ Editable for non-admins
+                        InputProps={{ readOnly: isAdmin }}
                     />
 
                     <TextField
@@ -106,7 +106,7 @@ const Profile = () => {
                             color="primary"
                             fullWidth
                             sx={{ marginTop: 2 }}
-                            onClick={handleSaveChanges} // ✅ Calls API to update profile
+                            onClick={handleSaveChanges}
                         >
                             Save Changes
                         </Button>

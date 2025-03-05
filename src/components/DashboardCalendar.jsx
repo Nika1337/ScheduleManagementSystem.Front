@@ -3,7 +3,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import ScheduleDetailsModal from "./ScheduleDetailsModal.jsx";
 import { useState } from "react";
 
-// Helper to filter schedules by date and part of the day
 const getSchedulesForSlot = (schedules, date, partOfDay) => {
     return schedules.filter(
         (schedule) => schedule.date === date && schedule.partOfDay === partOfDay
@@ -21,7 +20,6 @@ const DashboardCalendar = ({ schedules, weekStartDate, changeWeek, partsOfDay, f
         setModalOpen(true);
     };
 
-    // Dynamically number schedules shown on the page
     const scheduleMap = new Map();
     let scheduleIndex = 0;
     const getScheduleColor = (scheduleId) => {
@@ -169,7 +167,6 @@ const DashboardCalendar = ({ schedules, weekStartDate, changeWeek, partsOfDay, f
                                                 ))
                                             ) : (
                                                 <Typography variant="body2" sx={{ color: "#aaa" }}>
-                                                    {/* Empty slot */}
                                                 </Typography>
                                             )}
                                         </Grid>
@@ -180,12 +177,11 @@ const DashboardCalendar = ({ schedules, weekStartDate, changeWeek, partsOfDay, f
                     </Grid>
                 </Box>
 
-                {/* Updated ShiftDetailsModal with onSave */}
                 <ScheduleDetailsModal
                     schedule={selectedSchedule}
                     open={isModalOpen}
                     onClose={() => setModalOpen(false)}
-                    onSuccess={fetchSchedules} // ✅ Update parent schedules when a shift is saved
+                    onSuccess={fetchSchedules}
                 />
             </Box>
         </ThemeProvider>

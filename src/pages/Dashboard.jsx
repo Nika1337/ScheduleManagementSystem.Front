@@ -68,9 +68,7 @@ const Dashboard = () => {
 
 
     useEffect(() => {
-        // addSubscriber returns an unsubscribe function
         const unsubscribe = addSubscriber((data) => {
-            // This callback runs whenever an SSE event arrives
             console.log("SSE event in Dashboard:", data);
 
 
