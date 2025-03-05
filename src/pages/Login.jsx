@@ -1,30 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Container, TextField, Button, Typography, Paper } from "@mui/material";
-import { useAppContext } from "../context/AppContext";
+import { login } from "../services/auth";
+import { setToken } from "../hooks/useAuth";
 
 const Login = () => {
-    const { loginUser, loginError } = useAppContext(); // Use global auth function
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email || !password) {
             setError("Email and password are required.");
             return;
         }
 
-        const success = loginUser(email, password); // Call login function from context
-        if (success) {
-            navigate("/"); // Redirect to homepage on success
-        } else {
+        try {
+            const data = await login(email, password);
+            setToken(data.token);
+            navigate("/");
+        } catch (err) {
             setError("Invalid email or password.");
         }
     };
 
-    // Handle "Enter" key press
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
             handleLogin();
@@ -35,10 +35,9 @@ const Login = () => {
         <Container maxWidth="xs">
             <Paper elevation={3} sx={{ padding: 4, marginTop: 8, textAlign: "center" }}>
                 <Typography variant="h5" gutterBottom>Login</Typography>
-                {(error || loginError) && <Typography color="error">{error || loginError}</Typography>}
                 <Box
                     sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
-                    onKeyDown={handleKeyDown} // Attach keydown listener to the form
+                    onKeyDown={handleKeyDown}
                 >
                     <TextField
                         label="Email"
@@ -54,6 +53,7 @@ const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                    {error && <Typography color="error">{error}</Typography>}
                     <Button variant="contained" color="primary" fullWidth onClick={handleLogin}>
                         Login
                     </Button>

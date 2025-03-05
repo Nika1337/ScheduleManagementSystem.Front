@@ -1,60 +1,75 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from "@mui/material";
+import { changePassword } from "../services/auth";
+import { getToken } from "../hooks/useAuth";
 
 const ChangePasswordModal = ({ open, onClose }) => {
-    const [password, setPassword] = useState("");
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
         if (open) {
-            setPassword("");
+            setCurrentPassword("");
+            setNewPassword("");
             setConfirmPassword("");
             setError("");
-            setPasswordError("");
+            setSuccessMessage("");
         }
     }, [open]);
 
     const validatePassword = (password) => {
-        const minLength = /.{6,}/;
-        const hasUpperCase = /[A-Z]/;
-        const hasLowerCase = /[a-z]/;
-        const hasDigit = /\d/;
-        const hasSpecialChar = /[\W_]/;
-
-        if (!minLength.test(password)) return "Password must be at least 6 characters long.";
-        if (!hasUpperCase.test(password)) return "Password must contain at least one uppercase letter.";
-        if (!hasLowerCase.test(password)) return "Password must contain at least one lowercase letter.";
-        if (!hasDigit.test(password)) return "Password must contain at least one digit.";
-        if (!hasSpecialChar.test(password)) return "Password must contain at least one special character.";
+        if (!password || password.trim() === "") return "Password cannot be empty.";
+        if (password.length < 8) return "Password must be at least 8 characters long.";
+        if (!/\d/.test(password)) return "Password must contain at least one digit ('0'-'9').";
+        if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter ('a'-'z').";
+        if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter ('A'-'Z').";
+        if (!/[\W_]/.test(password)) return "Password must contain at least one non-alphanumeric character.";
+        if ([...new Set(password)].length === 1) return "Password must contain at least one unique character.";
         return "";
     };
 
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-        setPasswordError(validatePassword(e.target.value));
+    const handleNewPasswordChange = (e) => {
+        const newPass = e.target.value;
+        setNewPassword(newPass);
+        setError(validatePassword(newPass));
     };
 
     const handleConfirmPasswordChange = (e) => {
         setConfirmPassword(e.target.value);
     };
 
-    const handleSavePassword = () => {
+    const handleSavePassword = async () => {
         setError("");
+        setSuccessMessage("");
 
-        if (password !== confirmPassword) {
+        if (newPassword !== confirmPassword) {
             setError("Passwords do not match!");
             return;
         }
 
-        if (passwordError) {
-            setError(passwordError);
+        const validationError = validatePassword(newPassword);
+        if (validationError) {
+            setError(validationError);
             return;
         }
 
-        console.log("New Password Set:", "Updated");
-        onClose();
+        try {
+            await changePassword(currentPassword, newPassword, getToken()); // Send request
+            setSuccessMessage("Password changed successfully!");
+            setTimeout(() => {
+                onClose();
+            }, 1500);
+        } catch (err) {
+            console.error("Password change failed:", err);
+            if (err.response?.status === 400 && err.response.data?.error) {
+                setError(err.response.data.error);
+            } else {
+                setError("Failed to change password. Please try again.");
+            }
+        }
     };
 
     return (
@@ -64,13 +79,21 @@ const ChangePasswordModal = ({ open, onClose }) => {
                 <TextField
                     fullWidth
                     margin="dense"
+                    label="Current Password"
+                    type="password"
+                    variant="outlined"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+                <TextField
+                    fullWidth
+                    margin="dense"
                     label="New Password"
                     type="password"
                     variant="outlined"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    error={!!passwordError}
-                    helperText={passwordError}
+                    value={newPassword}
+                    onChange={handleNewPasswordChange}
+                    error={!!error}
                 />
                 <TextField
                     fullWidth
@@ -81,8 +104,10 @@ const ChangePasswordModal = ({ open, onClose }) => {
                     value={confirmPassword}
                     onChange={handleConfirmPasswordChange}
                     error={!!error}
-                    helperText={error}
                 />
+
+                {error && <Typography color="error" sx={{ mt: 2, textAlign: "center" }}>{error}</Typography>}
+                {successMessage && <Typography color="success" sx={{ mt: 2, textAlign: "center" }}>{successMessage}</Typography>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="secondary">
@@ -92,7 +117,7 @@ const ChangePasswordModal = ({ open, onClose }) => {
                     onClick={handleSavePassword}
                     color="primary"
                     variant="contained"
-                    disabled={!password || !confirmPassword}
+                    disabled={!currentPassword || !newPassword || !confirmPassword}
                 >
                     Save Password
                 </Button>

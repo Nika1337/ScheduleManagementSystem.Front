@@ -1,57 +1,67 @@
-import { useState, useRef } from "react";
-import { Container, Box, TextField, Button, Typography, Paper, Avatar } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Container, Box, TextField, Button, Typography, Paper, Avatar, CircularProgress } from "@mui/material";
 import ChangePasswordModal from "../components/ChangePasswordModal";
-import { useAppContext } from "../context/AppContext";
-import { useNavigate } from "react-router-dom";
+import ChangeEmailModal from "../components/ChangeEmailModal";
+import { getUserRole, getUserEmail, getToken, useAuth } from "../hooks/useAuth";
+import { getProfile, updateProfile } from "../services/profile"; // ✅ Import updateProfile
 
 const Profile = () => {
-    const { user, setUser, logoutUser } = useAppContext();
+    const { logout } = useAuth();
     const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
+    const [isEmailModalOpen, setEmailModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const fileInputRef = useRef(null);
-    const navigate = useNavigate();
+    const userEmail = getUserEmail();
+    const userRole = getUserRole();
+    const isAdmin = userRole === "Admin";
 
-    const handleChange = (e) => {
-        setUser({ ...user, [e.target.name]: e.target.value });
-    };
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setUser({ ...user, avatar: imageUrl }); // Update global user context
+    useEffect(() => {
+        if (!isAdmin) {
+            const loadProfile = async () => {
+                try {
+                    const profileData = await getProfile(getToken());
+                    setFirstName(profileData.firstName || "");
+                    setLastName(profileData.lastName || "");
+                } catch (error) {
+                    console.error("Failed to fetch profile:", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            loadProfile();
+        } else {
+            setFirstName("Admin");
+            setLastName("Admin");
+            setLoading(false);
+        }
+    }, [isAdmin]);
+
+    const handleSaveChanges = async () => {
+        try {
+            await updateProfile({ firstName, lastName }, getToken()); // ✅ Send updated data to backend
+        } catch (error) {
+            console.error("Failed to update profile:", error);
         }
     };
 
-    const handleAvatarClick = () => {
-        fileInputRef.current.click();
-    };
-
-    const handleSaveChanges = () => {
-        console.log("Updated User Info:", user);
-        console.log("Profile Image File:", user.avatar);
-    };
-
-    const handleLogout = () => {
-        logoutUser();
-        navigate("/login"); // Redirect to login after logout
-    };
+    if (loading) {
+        return (
+            <Container maxWidth="sm" sx={{ paddingTop: "40px", textAlign: "center" }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
 
     return (
         <Container maxWidth="sm" sx={{ paddingTop: "40px" }}>
             <Paper sx={{ padding: 3, boxShadow: 3, textAlign: "center" }}>
-                <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    style={{ display: "none" }}
-                    onChange={handleImageChange}
-                />
                 <Avatar
-                    src={user.avatar}
-                    alt={`${user.firstName} ${user.surname}`}
-                    sx={{ width: 100, height: 100, margin: "0 auto", mb: 2, cursor: "pointer" }}
-                    onClick={handleAvatarClick}
+                    src="/static/images/avatar/default.png"
+                    alt="User"
+                    sx={{ width: 100, height: 100, margin: "0 auto", mb: 2 }}
                 />
 
                 <Typography variant="h5" sx={{ marginBottom: 2 }}>
@@ -65,37 +75,43 @@ const Profile = () => {
                         label="First Name"
                         name="firstName"
                         variant="outlined"
-                        value={user.firstName}
-                        onChange={handleChange}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        InputProps={{ readOnly: isAdmin }} // ✅ Editable for non-admins
                     />
                     <TextField
                         fullWidth
                         margin="dense"
-                        label="Surname"
-                        name="surname"
+                        label="Last Name"
+                        name="lastName"
                         variant="outlined"
-                        value={user.surname}
-                        onChange={handleChange}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        InputProps={{ readOnly: isAdmin }} // ✅ Editable for non-admins
                     />
+
                     <TextField
                         fullWidth
                         margin="dense"
                         label="Email"
                         name="email"
                         variant="outlined"
-                        type="email"
-                        value={user.email}
-                        onChange={handleChange}
+                        value={userEmail}
+                        InputProps={{ readOnly: true }}
                     />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{ marginTop: 2 }}
-                        onClick={handleSaveChanges}
-                    >
-                        Save Changes
-                    </Button>
+
+                    {!isAdmin && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            sx={{ marginTop: 2 }}
+                            onClick={handleSaveChanges} // ✅ Calls API to update profile
+                        >
+                            Save Changes
+                        </Button>
+                    )}
+
                     <Button
                         variant="text"
                         color="warning"
@@ -105,12 +121,23 @@ const Profile = () => {
                     >
                         Change Password
                     </Button>
+
+                    <Button
+                        variant="text"
+                        color="info"
+                        fullWidth
+                        sx={{ marginTop: 1, fontWeight: "bold" }}
+                        onClick={() => setEmailModalOpen(true)}
+                    >
+                        Change Email
+                    </Button>
+
                     <Button
                         variant="text"
                         color="error"
                         fullWidth
                         sx={{ marginTop: 2, fontWeight: "bold" }}
-                        onClick={handleLogout}
+                        onClick={logout}
                     >
                         Logout
                     </Button>
@@ -118,6 +145,7 @@ const Profile = () => {
             </Paper>
 
             <ChangePasswordModal open={isPasswordModalOpen} onClose={() => setPasswordModalOpen(false)} />
+            <ChangeEmailModal open={isEmailModalOpen} onClose={() => setEmailModalOpen(false)} />
         </Container>
     );
 };

@@ -27,8 +27,12 @@ const mockJobs = [
 
 // Mock shifts
 const mockShifts = [
-    { id: 1, job: "Barista", worker: "Adams, Co", date: "2025-02-18", partOfDay: "Evening" },
-    { id: 2, job: "Waiter", worker: "Aguirre, Ha", date: "2025-02-22", partOfDay: "Afternoon" },
+    { id: 1, job: "Barista", worker: "Adams, Co", date: "2025-03-02", partOfDay: "Evening" },
+    { id: 2, job: "Waiter", worker: "Aguirre, Ha", date: "2025-03-03", partOfDay: "Afternoon" },
+    { id: 3, job: "Barista", worker: "Adams, Co", date: "2025-03-04", partOfDay: "Evening" },
+    { id: 4, job: "Waiter", worker: "Aguirre, Ha", date: "2025-03-05", partOfDay: "Afternoon" },
+    { id: 5, job: "Barista", worker: "Adams, Co", date: "2025-03-06", partOfDay: "Evening" },
+    { id: 6, job: "Waiter", worker: "Aguirre, Ha", date: "2025-03-07", partOfDay: "Morning" },
 ];
 
 // Mock schedule change requests

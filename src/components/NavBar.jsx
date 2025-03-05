@@ -11,31 +11,31 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme, Paper } from "@mui/material";
-import { useAppContext } from "../context/AppContext";
-
+import { getUserRole, isAuthenticated } from "../hooks/useAuth";
 
 function NavBar() {
-    const { user, userRole } = useAppContext();
-    const theme = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
+    const theme = useTheme();
     const isProfileActive = location.pathname === "/profile";
     const [anchorElNav, setAnchorElNav] = useState(null);
 
+    const userRole = getUserRole();
+    const isLoggedIn = isAuthenticated();
 
     const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
     const handleCloseNavMenu = () => setAnchorElNav(null);
 
-
     const pages = [
         { name: "Dashboard", path: "/", allowedRoles: ["Admin", "Worker"] },
-        { name: "Schedule Change Requests", path: "/schedule-change-requests", allowedRoles: ["Admin", "Worker"] },
+        { name: "Pending Schedule Changes", path: "/pending-schedule-changes", allowedRoles: ["Admin", "Worker"] },
         { name: "Jobs", path: "/jobs", allowedRoles: ["Admin"] },
-        { name: "Employees", path: "/employees", allowedRoles: ["Admin"] },
+        { name: "Workers", path: "/workers", allowedRoles: ["Admin"] },
     ];
 
-    const visiblePages = pages.filter(page => page.allowedRoles.includes(userRole));
+    const visiblePages = pages.filter(page => userRole && page.allowedRoles.includes(userRole));
 
+    if (!isLoggedIn) return null;
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", padding: "16px" }}>
@@ -52,7 +52,6 @@ function NavBar() {
                 <Container maxWidth="xl">
                     <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
                         <Toolbar disableGutters>
-                            {/* Mobile Menu - Collapse Earlier at md (960px) */}
                             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                                 <IconButton
                                     size="large"
@@ -95,11 +94,10 @@ function NavBar() {
                                 </Menu>
                             </Box>
 
-                            {/* Desktop Menu - Collapse Earlier */}
                             <Box
                                 sx={{
                                     flexGrow: 1,
-                                    display: { xs: "none", md: "flex" }, // Collapse at md (960px) instead of sm (600px)
+                                    display: { xs: "none", md: "flex" },
                                     justifyContent: "center",
                                     gap: 1,
                                     flexWrap: "nowrap",
@@ -147,16 +145,15 @@ function NavBar() {
                                 ))}
                             </Box>
 
-                            {/* Profile Avatar */}
                             <Box sx={{ flexGrow: 0 }}>
                                 <IconButton sx={{ p: 0 }} onClick={() => navigate("/profile")}>
                                     <Avatar
-                                        alt={user ? `${user.firstName} ${user.surname}` : "User"}
-                                        src={user?.avatar || "/static/images/avatar/default.png"}
+                                        alt="User"
+                                        src="/static/images/avatar/default.png"
                                         sx={{
-                                            width: 40, // Keep the same size
-                                            height: 40, // Keep the same size
-                                            borderRadius: "50%", // Ensure circular shape
+                                            width: 40,
+                                            height: 40,
+                                            borderRadius: "50%",
                                             boxShadow: isProfileActive
                                                 ? `0px 0px 2px 3px ${theme.palette.secondary.main}`
                                                 : "none",
