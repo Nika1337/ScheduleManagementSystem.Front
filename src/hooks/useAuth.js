@@ -2,8 +2,23 @@ import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-export const getToken = () => localStorage.getItem("token");
+export const getToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
 
+    try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp && decoded.exp < currentTime) {
+            removeToken();
+            return null;
+        }
+        return token;
+    } catch (error) {
+        removeToken();
+        return null;
+    }
+};
 export const setToken = (token) => {
     localStorage.setItem("token", token);
     window.dispatchEvent(new Event("authChange"));
