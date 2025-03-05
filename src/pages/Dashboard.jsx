@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import {useState, useEffect, useCallback, useContext} from "react";
 import {
     Box,
     Fab,
@@ -14,6 +14,7 @@ import { getSchedules } from "../services/schedules";
 import { getUserRole, getToken } from "../hooks/useAuth";
 import { PART_OF_DAY_OPTIONS } from "../constants/partOfDay";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import {SseContext} from "../context/SseContext.jsx";
 
 const getMondayOfWeek = (date) => {
     const monday = new Date(date);
@@ -30,8 +31,6 @@ const Dashboard = () => {
 
     const userRole = getUserRole();
 
-    const [notificationOpen, setNotificationOpen] = useState(false);
-    const [notificationMessage, setNotificationMessage] = useState("");
 
     const getStartAndEndDate = (mondayDate) => {
         const mondayThisWeek = new Date(mondayDate);
@@ -43,6 +42,9 @@ const Dashboard = () => {
             endDate: formatDate(mondayNextWeek),
         };
     };
+
+    const { addSubscriber } = useContext(SseContext);
+
 
     const fetchSchedules = useCallback(async () => {
         setLoading(true);
@@ -64,44 +66,22 @@ const Dashboard = () => {
         fetchSchedules();
     }, [fetchSchedules]);
 
+
     useEffect(() => {
-        if (userRole !== "Worker") {
-            return;
-        }
+        // addSubscriber returns an unsubscribe function
+        const unsubscribe = addSubscriber((data) => {
+            // This callback runs whenever an SSE event arrives
+            console.log("SSE event in Dashboard:", data);
 
-        const token = getToken();
-        const controller = new AbortController();
 
-        fetchEventSource("http://localhost:5090/schedules/change-events", {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "text/event-stream"
-            },
-            signal: controller.signal,
-
-            onmessage: async (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-
-                    setNotificationMessage(data.message);
-                    setNotificationOpen(true);
-
-                    await fetchSchedules();
-                } catch (parseErr) {
-                    console.error("Failed to parse SSE event data:", parseErr);
-                }
-            },
-
-            onerror(err) {
-                console.error("SSE encountered an error:", err);
-            },
+            fetchSchedules();
         });
 
         return () => {
-            controller.abort();
+            unsubscribe();
         };
-    }, [userRole, fetchSchedules]);
+    }, [userRole, addSubscriber, fetchSchedules]);
+
 
     const changeWeek = (offset) => {
         setWeekStartDate((prev) => {
@@ -155,20 +135,7 @@ const Dashboard = () => {
                 onSuccess={fetchSchedules}
             />
 
-            <Snackbar
-                open={notificationOpen}
-                autoHideDuration={6000}
-                onClose={() => setNotificationOpen(false)}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-                <Alert
-                    severity="info"
-                    onClose={() => setNotificationOpen(false)}
-                    sx={{ width: "100%" }}
-                >
-                    {notificationMessage}
-                </Alert>
-            </Snackbar>
+
         </Container>
     );
 };

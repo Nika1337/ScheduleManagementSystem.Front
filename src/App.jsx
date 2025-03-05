@@ -11,13 +11,18 @@ import Profile from "./pages/Profile.jsx";
 import Login from "./pages/Login.jsx";
 import { useAuth } from "./hooks/useAuth";
 import './styles/styles.css';
+import { SseProvider } from "./context/SseContext.jsx";
+import NotificationPopup from "./components/NotificationPopup.jsx";
 
 function App() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Router>
-                <AppContent />
+                <SseProvider>
+                    <NotificationPopup />
+                    <AppContent />
+                </SseProvider>
             </Router>
         </ThemeProvider>
     );
@@ -28,7 +33,7 @@ const AppContent = () => {
 
     return (
         <>
-            {authenticated && window.location.pathname !== "/login" && <NavBar />}
+            <NavBar />
             <Container sx={{ textAlign: "center", marginTop: 4 }}>
                 <Routes>
                     <Route path="/login" element={authenticated ? <Navigate to="/" /> : <Login />} />

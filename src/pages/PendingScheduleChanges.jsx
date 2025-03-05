@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import {useState, useEffect, useCallback, useContext} from "react";
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, CircularProgress, Alert } from "@mui/material";
 import { CheckCircle, Cancel, Undo } from "@mui/icons-material";
 import {
@@ -8,6 +8,7 @@ import {
     withdrawPendingScheduleChange
 } from "../services/pending";
 import { getUserRole, getToken } from "../hooks/useAuth";
+import {SseContext} from "../context/SseContext.jsx";
 
 const formatDateTime = (isoString) => {
     const date = new Date(isoString);
@@ -21,6 +22,8 @@ const PendingScheduleChanges = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const userRole = getUserRole();
+
+    const { addSubscriber } = useContext(SseContext);
 
     const fetchRequests = useCallback(async () => {
         setLoading(true);
@@ -39,6 +42,19 @@ const PendingScheduleChanges = () => {
     useEffect(() => {
         fetchRequests();
     }, [fetchRequests]);
+
+    useEffect(() => {
+        const unsubscribe = addSubscriber((data) => {
+            console.log("SSE event in Dashboard:", data);
+
+
+            fetchRequests();
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [userRole, addSubscriber, fetchRequests]);
 
     const handleUpdate = async (id, action) => {
         try {
